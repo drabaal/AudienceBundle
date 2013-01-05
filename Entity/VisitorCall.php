@@ -1,11 +1,20 @@
 <?php
 
+/*
+ * This file is part of the TgaAudienceBundle package.
+ *
+ * (c) Titouan Galopin <http://titouangalopin.com/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tga\AudienceBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * VisitorCall
+ * VisitorCall represents a page call by any visitor.
  *
  * @ORM\Table(name="tga_audience_calls")
  * @ORM\Entity(repositoryClass="Tga\AudienceBundle\Entity\VisitorCallRepository")

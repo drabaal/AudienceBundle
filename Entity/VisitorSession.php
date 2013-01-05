@@ -1,11 +1,20 @@
 <?php
 
+/*
+ * This file is part of the TgaAudienceBundle package.
+ *
+ * (c) Titouan Galopin <http://titouangalopin.com/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tga\AudienceBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * VisitorSession
+ * VisitorSession represents a visitor session, which contain many calls.
  *
  * @ORM\Table(name="tga_audience_sessions")
  * @ORM\Entity(repositoryClass="Tga\AudienceBundle\Entity\VisitorSessionRepository")

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the TgaAudienceBundle package.
+ *
+ * (c) Titouan Galopin <http://titouangalopin.com/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tga\AudienceBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
@@ -10,7 +19,9 @@ use Symfony\Component\HttpKernel\Kernel;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 
 /**
- * Kernel listener
+ * Kernel listener, to store request and load datas for each call.
+ *
+ * @author Titouan Galopin <galopintitouan@gmail.com>
  */
 class KernelListener
 {
@@ -23,6 +34,11 @@ class KernelListener
 	 * @var Kernel
 	 */
 	private $kernel;
+
+	/**
+	 * @var Registry
+	 */
+	private $dotrine;
 
 	/**
 	 * @var array

@@ -1,11 +1,25 @@
 <?php
 
+/*
+ * This file is part of the TgaAudienceBundle package.
+ *
+ * (c) Titouan Galopin <http://titouangalopin.com/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tga\AudienceBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
+/**
+ * Interface for statistics analyse.
+ *
+ * @author Titouan Galopin <galopintitouan@gmail.com>
+ */
 class StatsController extends Controller
 {
 	/**

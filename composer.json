@@ -4,12 +4,16 @@
     "keywords": ["Audience", "Tga", "Statistics", "Stats", "PHP"],
     "homepage": "http://titouangalopin.com/",
     "license": "Creative Commons BY-NC 3.0",
+    "type": "library",
     "authors": [
         {
             "name": "Titouan Galopin",
             "email": "galopintitouan@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-0": { "Pagerfanta\\": "src/" }
+    },
     "require": {
         "php": ">=5.3"
     }

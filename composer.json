@@ -11,9 +11,6 @@
             "email": "galopintitouan@gmail.com"
         }
     ],
-    "autoload": {
-        "psr-0": { "Pagerfanta\\": "src/" }
-    },
     "require": {
         "php": ">=5.3"
     }

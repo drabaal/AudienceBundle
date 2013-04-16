@@ -11,6 +11,11 @@
             "email": "galopintitouan@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-0": {
+            "Tga\\AudienceBundle": ""
+        }
+    },
     "require": {
         "php": ">=5.3"
     }

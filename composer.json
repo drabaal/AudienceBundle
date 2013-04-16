@@ -16,6 +16,7 @@
             "Tga\\AudienceBundle": ""
         }
     },
+    "target-dir": "Tga/AudienceBundle",
     "require": {
         "php": ">=5.3"
     }

@@ -89,8 +89,8 @@ class KernelListener
 	 */
 	public function onKernelTerminate(PostResponseEvent $event)
 	{
-		// if(! in_array($this->kernel->getEnvironment(), $this->config['environnements']))
-			// return;
+		if(! in_array($this->kernel->getEnvironment(), $this->config['environnements']))
+			return;
 
 		if(in_array($this->request->get('_route'), $this->config['disabledRoutes']))
 			return;

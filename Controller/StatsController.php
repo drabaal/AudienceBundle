@@ -22,8 +22,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
  * Interface for statistics analyse.
  *
  * @author Titouan Galopin <galopintitouan@gmail.com>
- *
- * @Route("/audience")
  */
 class StatsController extends Controller
 {

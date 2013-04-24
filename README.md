@@ -2,13 +2,13 @@
 TgaAudienceBundle
 =================
 
-TgaAudienceBundle is a complete, extensible and flexible bundle for Symfony 2 to track your webiste audience and7
+TgaAudienceBundle is a complete, extensible and flexible bundle for Symfony 2 to track your website audience and
 visitors behaviors easily.
 
-Its aim is to as simple as possible, so you don't need to care about your visitors tracking.
+Its aim is to be as simple as possible to install and to use.
 
 Installation
----------------------
+------------
 
 TgaAudience is a classic bundle, made for Symfony 2.2. You can use Composer to install it:
 
@@ -94,8 +94,8 @@ $processor->getExternalSources();
 $processor->getMostUsedExternalSources();
 ```
 
-Configurtion
------
+Configuration
+-------------
 
 The default configuration is:
 

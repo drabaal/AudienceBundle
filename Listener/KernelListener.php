@@ -11,12 +11,14 @@
 
 namespace Tga\AudienceBundle\Listener;
 
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Tga\AudienceBundle\Browser\UserAgent;
 
 /**
  * Kernel listener, to store request and load datas for each call.
@@ -38,7 +40,7 @@ class KernelListener
 	/**
 	 * @var Registry
 	 */
-	private $dotrine;
+	private $doctrine;
 
 	/**
 	 * @var array
@@ -55,11 +57,17 @@ class KernelListener
 	 */
 	private $startTime;
 
+	/**
+	 * Constructor
+	 *
+	 * @param Container $container
+	 */
 	public function __construct(Container $container)
 	{
 		$this->request = $container->get('request');
 		$this->kernel = $container->get('kernel');
 		$this->doctrine = $container->get('doctrine');
+		$this->sessionData = array();
 
 		$this->config = array(
 			'sessionDuration' => $container->getParameter('tga_audience.session_duration'),
@@ -74,7 +82,6 @@ class KernelListener
 	public function onKernelRequest(GetResponseEvent $event)
 	{
 		$this->startTime = microtime(true);
-		$this->sessionData = $this->request->getSession()->all();
 	}
 
 	/**
@@ -82,8 +89,8 @@ class KernelListener
 	 */
 	public function onKernelTerminate(PostResponseEvent $event)
 	{
-		if(! in_array($this->kernel->getEnvironment(), $this->config['environnements']))
-			return;
+		// if(! in_array($this->kernel->getEnvironment(), $this->config['environnements']))
+			// return;
 
 		if(in_array($this->request->get('_route'), $this->config['disabledRoutes']))
 			return;
@@ -91,9 +98,17 @@ class KernelListener
 		if(strpos($this->request->get('_controller'), 'Tga\AudienceBundle') !== false)
 			return;
 
-		$infos = $this->getBrowser($_SERVER['HTTP_USER_AGENT']);
+		if (substr($this->request->get('_route'), 0, 1) == '_')
+			return;
+
+		if (session_id() != '') {
+			$this->sessionData = $_SESSION;
+		}
+
+		$timeToLoad = microtime(true) - $this->startTime;
 
 		// Get the session and update it if required
+		/** @var $em EntityManager */
 		$em = $this->doctrine->getManager();
 
 		$session = $em->createQueryBuilder()
@@ -107,19 +122,24 @@ class KernelListener
 			->getQuery()
 			->getOneOrNullResult();
 
-		if(! $session) {
+		if (! $session) {
 			$session = new \Tga\AudienceBundle\Entity\VisitorSession();
 
-			$infos = $this->getBrowser($_SERVER['HTTP_USER_AGENT']);
+			if (isset($_SERVER['HTTP_USER_AGENT'])) {
+				$infos = $this->getBrowser($_SERVER['HTTP_USER_AGENT']);
+			} else {
+				$infos = new UserAgent();
+			}
 
-			$session->setBrowser($infos['browser'])
-				->setBrowserVersion($infos['version'])
-				->setPlatform($infos['platform'])
+			$session->setBrowser($infos->getBrowser())
+				->setBrowserVersion($infos->getBrowserVersion())
+				->setPlatform($infos->getPlatform())
 				->setIp($this->request->getClientIp())
 				->setDatas($this->sessionData);
 		}
 
 		$session->setLastVisit(new \DateTime());
+
 		$em->persist($session);
 
 		if(! $session->lastPageIs($this->request->getRequestUri())) {
@@ -131,7 +151,7 @@ class KernelListener
 				->setRoute($this->request->get('_route'))
 				->setRequestUri($this->request->getRequestUri())
 				->setReferer(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null)
-				->setTimeToLoad(microtime(true) - $this->startTime);
+				->setTimeToLoad($timeToLoad);
 
 			$em->persist($call);
 		}
@@ -142,86 +162,86 @@ class KernelListener
 	/**
 	 * Find the browser
 	 *
-	 * @param $u_agent
-	 *
-	 * @return array
-	 *
+	 * @param string $userAgentString
+	 * @return UserAgent
 	 * @author <ruudrp@live.nl>
 	 */
-	private function getBrowser($u_agent)
+	private function getBrowser($userAgentString)
 	{
-		$bname = 'Unknown';
-		$platform = 'Unknown';
-		$version = 'Unknown';
+		$userAgent = new UserAgent();
 
 		// First get the platform
-		if(preg_match('/linux/i', $u_agent)) {
-			$platform = 'Linux';
-		}
-		elseif(preg_match('/macintosh|mac os x/i', $u_agent)) {
-			$platform = 'Mac';
-		}
-		elseif(preg_match('/windows|win32/i', $u_agent)) {
-			$platform = 'Windows';
+		if(preg_match('/android/i', $userAgentString)) {
+			$userAgent->setPlatform(UserAgent::PLATFORM_ANDROID);
+		} elseif(preg_match('/iphone/i', $userAgentString)) {
+			$userAgent->setPlatform(UserAgent::PLATFORM_IPHONE);
+		} elseif(preg_match('/ipod/i', $userAgentString)) {
+			$userAgent->setPlatform(UserAgent::PLATFORM_IPOD);
+		} elseif(preg_match('/ipad/i', $userAgentString)) {
+			$userAgent->setPlatform(UserAgent::PLATFORM_IPAD);
+		} elseif(preg_match('/macintosh|mac os x/i', $userAgentString)) {
+			$userAgent->setPlatform(UserAgent::PLATFORM_MAC);
+		} elseif(preg_match('/linux/i', $userAgentString)) {
+			$userAgent->setPlatform(UserAgent::PLATFORM_LINUX);
+		} elseif(preg_match('/windows|win32/i', $userAgentString)) {
+			$userAgent->setPlatform(UserAgent::PLATFORM_WINDOWS);
 		}
 
 		// Next get the name of the useragent yes seperately and for good reason
-		if(preg_match('/MSIE/i', $u_agent) && !preg_match('/Opera/i', $u_agent)) {
-			$bname = 'Internet Explorer';
-			$ub = "MSIE";
-		}
-		elseif(preg_match('/Firefox/i', $u_agent)) {
-			$bname = 'Mozilla Firefox';
-			$ub = "Firefox";
-		}
-		elseif(preg_match('/Chrome/i', $u_agent)) {
-			$bname = 'Google Chrome';
-			$ub = "Chrome";
-		}
-		elseif(preg_match('/Safari/i', $u_agent)) {
-			$bname = 'Apple Safari';
-			$ub = "Safari";
-		}
-		elseif(preg_match('/Opera/i', $u_agent)) {
-			$bname = 'Opera';
-			$ub = "Opera";
-		}
-		elseif(preg_match('/Netscape/i', $u_agent)) {
-			$bname = 'Netscape';
-			$ub = "Netscape";
+		if(preg_match('/MSIE/i', $userAgentString) && !preg_match('/Opera/i', $userAgentString)) {
+			$userAgent->setBrowser(UserAgent::BROWSER_IE);
+			$ub = 'MSIE';
+		} elseif(preg_match('/Firefox/i', $userAgentString)) {
+			$userAgent->setBrowser(UserAgent::BROWSER_FIREFOX);
+			$ub = 'Firefox';
+		} elseif(preg_match('/Chrome/i', $userAgentString)) {
+			$userAgent->setBrowser(UserAgent::BROWSER_CHROME);
+			$ub = 'Chrome';
+		} elseif(preg_match('/Safari/i', $userAgentString)) {
+			$userAgent->setBrowser(UserAgent::BROWSER_SAFARI);
+			$ub = 'Safari';
+		} elseif(preg_match('/Opera/i', $userAgentString)) {
+			$userAgent->setBrowser(UserAgent::BROWSER_OPERA);
+			$ub = 'Opera';
+		} elseif(preg_match('/Netscape/i', $userAgentString)) {
+			$userAgent->setBrowser(UserAgent::BROWSER_NETSCAPE);
+			$ub = 'Netscape';
 		}
 
-		// Get the correct version number
-		$known = array('Version', $ub, 'other');
-		$pattern = '#(?<browser>'. join('|', $known) .')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
+		if (isset($ub)) {
+			// Get the correct version number
+			$known = array('Version', $ub, 'other');
+			$pattern = '#(?<browser>'. join('|', $known) .')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
 
-		preg_match_all($pattern, $u_agent, $matches);
+			preg_match_all($pattern, $userAgentString, $matches);
 
-		$i = count($matches['browser']);
+			$i = count($matches['browser']);
 
-		if($i != 1) {
-			//we will have two since we are not using 'other' argument yet
-			//see if version is before or after the name
-			if (strripos($u_agent, 'Version') < strripos($u_agent, $ub)) {
-				$version = $matches['version'][0];
+			if($i != 1) {
+				//we will have two since we are not using 'other' argument yet
+				//see if version is before or after the name
+				if (strripos($userAgentString, 'Version') < strripos($userAgentString, $ub)) {
+					$version = $matches['version'][0];
+				}
+				else {
+					$version = $matches['version'][1];
+				}
 			}
 			else {
-				$version = $matches['version'][1];
+				$version = $matches['version'][0];
 			}
-		}
-		else {
-			$version = $matches['version'][0];
+
+			// check if we have a number
+			if(empty($version)) {
+				$version = 'Unknown';
+			}
+
+			$version = explode('.', $version);
+			$version = $version[0];
+
+			$userAgent->setBrowserVersion($version);
 		}
 
-		// check if we have a number
-		if(empty($version)) {
-			$version = 'Unknown';
-		}
-
-		return array(
-			'browser'       => $bname,
-			'version'       => $version,
-			'platform'      => $platform
-		);
+		return $userAgent;
 	}
 }

@@ -14,10 +14,10 @@ namespace Tga\AudienceBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * VisitorCall represents a page call by any visitor.
+ * VisitorCall represents a page call by any visitor
  *
  * @ORM\Table(name="tga_audience_calls")
- * @ORM\Entity(repositoryClass="Tga\AudienceBundle\Entity\VisitorCallRepository")
+ * @ORM\Entity()
  */
 class VisitorCall
 {
@@ -78,6 +78,15 @@ class VisitorCall
 	 * @ORM\ManyToOne(targetEntity="VisitorSession")
 	 */
 	private $session;
+
+
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->date = new \DateTime();
+	}
 
     /**
      * Get id

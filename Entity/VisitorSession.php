@@ -14,10 +14,10 @@ namespace Tga\AudienceBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * VisitorSession represents a visitor session, which contain many calls.
+ * VisitorSession represents a visitor session, which contain many calls
  *
  * @ORM\Table(name="tga_audience_sessions")
- * @ORM\Entity(repositoryClass="Tga\AudienceBundle\Entity\VisitorSessionRepository")
+ * @ORM\Entity()
  */
 class VisitorSession
 {
@@ -79,12 +79,15 @@ class VisitorSession
 	 */
 	private $calls;
 
+
+
 	/**
 	 * Constructor
 	 */
 	public function __construct()
 	{
 		$this->calls = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->date = new \DateTime();
 	}
 
     /**

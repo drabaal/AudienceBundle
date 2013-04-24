@@ -15,7 +15,7 @@ TgaAudience is a classic bundle, made for Symfony 2.2. You can use Composer to i
 ``` json
 {
     "require": {
-        "tga/audience": "master"
+        "tga/audience": "dev-master"
     }
 }
 ```

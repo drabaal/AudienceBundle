@@ -105,3 +105,9 @@ tga_audience:
     disabled_routes: []         # List of disabled routes to not track with the bundle
     environnements: ['prod']    # List of environnements where the bundle will track requests
 ```
+
+
+License
+-------
+
+Apache (see LICENSE.md).

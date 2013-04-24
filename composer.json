@@ -16,11 +16,6 @@
 	"autoload": {
 		"psr-0": { "Tga\\AudienceBundle": "" }
 	},
-	"target-dir": "Tga/AudienceBundle",
-	"extra": {
-		"branch-alias": {
-			"dev-master": "v0.1.0-alpha"
-		}
-	}
+	"target-dir": "Tga/AudienceBundle"
 }
 

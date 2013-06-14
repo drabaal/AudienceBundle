@@ -218,7 +218,7 @@ class Processor
 		$i = 1;
 
 		foreach ($routes as $route => $nb) {
-			if ($i > 50)
+			if ($i > 10)
 				break;
 
 			$mostUsedRoutes[$route] = array('place' => $i, 'route' => $route, 'nb' => $nb, 'percentage' => round(($nb / $countRoutes) * 100, 2),);
@@ -229,7 +229,7 @@ class Processor
 		$i = 1;
 
 		foreach ($browsersVersions as $browsersVersion => $nb) {
-			if ($i > 50)
+			if ($i > 10)
 				break;
 
 			$mostUsedBrowsers[$browsersVersion] = array('place' => $i, 'name' => $browsersVersion, 'nb' => $nb, 'percentage' => round(($nb / $countBrowsersVersions) * 100, 2),);

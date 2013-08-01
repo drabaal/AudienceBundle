@@ -117,7 +117,7 @@ class KernelListener
 			->leftJoin('s.calls', 'c')
 			->where('s.ip = :ip')
 			->andWhere('s.lastVisit > :invalidateTime')
-			->setParameter('ip', $this->request->getClientIp())
+			->setParameter('ip', $this->getIp())
 			->setParameter('invalidateTime', time() - $this->config['sessionDuration'])
 			->getQuery()
 			->getOneOrNullResult();
@@ -134,7 +134,7 @@ class KernelListener
 			$session->setBrowser($infos->getBrowser())
 				->setBrowserVersion($infos->getBrowserVersion())
 				->setPlatform($infos->getPlatform())
-				->setIp($this->request->getClientIp())
+				->setIp($this->getIp())
 				->setDatas($this->sessionData);
 		}
 
@@ -243,5 +243,14 @@ class KernelListener
 		}
 
 		return $userAgent;
+	}
+	
+	protected function getIp(Request $request)
+	{
+		if ($request->server->has('HTTP_X_FORWARDED_FOR')) {
+			return $request->server->get('HTTP_X_FORWARDED_FOR');
+		}
+		
+		return $request->getClientIp();
 	}
 }

@@ -117,7 +117,7 @@ class KernelListener
 			->leftJoin('s.calls', 'c')
 			->where('s.ip = :ip')
 			->andWhere('s.lastVisit > :invalidateTime')
-			->setParameter('ip', $this->getIp())
+			->setParameter('ip', $this->getIp($this->request))
 			->setParameter('invalidateTime', time() - $this->config['sessionDuration'])
 			->getQuery()
 			->getOneOrNullResult();
@@ -134,7 +134,7 @@ class KernelListener
 			$session->setBrowser($infos->getBrowser())
 				->setBrowserVersion($infos->getBrowserVersion())
 				->setPlatform($infos->getPlatform())
-				->setIp($this->getIp())
+				->setIp($this->getIp($this->request))
 				->setDatas($this->sessionData);
 		}
 

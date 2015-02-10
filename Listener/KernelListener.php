@@ -151,7 +151,9 @@ class KernelListener
 				->setRoute($this->request->get('_route'))
 				->setRequestUri($this->request->getRequestUri())
 				->setReferer(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null)
-				->setTimeToLoad($timeToLoad);
+				->setTimeToLoad($timeToLoad)
+				->setHost($this->request->getHttpHost())
+			;
 
 			$em->persist($call);
 		}

@@ -51,6 +51,13 @@ class VisitorCall
 	 */
 	private $controller;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="host", type="string", length=255)
+     */
+    private $host;
+
 	/**
 	 * @var string
 	 *
@@ -165,6 +172,29 @@ class VisitorCall
     public function getController()
     {
         return $this->controller;
+    }
+
+    /**
+     * Set host
+     *
+     * @param string $host
+     * @return VisitorCall
+     */
+    public function setHost($host)
+    {
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Get host
+     *
+     * @return string 
+     */
+    public function getHost()
+    {
+        return $this->host;
     }
 
 	/**

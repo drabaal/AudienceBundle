@@ -61,14 +61,14 @@ class VisitorCall
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="request_uri", type="string", length=255)
+	 * @ORM\Column(name="request_uri", type="text")
 	 */
 	private $requestUri;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="referer", type="string", length=255, nullable=true)
+	 * @ORM\Column(name="referer", type="text", nullable=true)
 	 */
 	private $referer;
 

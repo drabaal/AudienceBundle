@@ -82,7 +82,7 @@ class VisitorCall
 	/**
 	 * @var VisitorSession $session
 	 *
-	 * @ORM\ManyToOne(targetEntity="VisitorSession")
+	 * @ORM\ManyToOne(targetEntity="VisitorSession", inversedBy="calls")
 	 */
 	private $session;
 

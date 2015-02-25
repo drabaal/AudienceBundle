@@ -31,6 +31,7 @@ class Configuration implements ConfigurationInterface
 
 		$rootNode
 			->children()
+				->booleanNode('only_master_requests')->defaultFalse()->end()
 				->integerNode('session_duration')->defaultValue(300)->end()
 				->variableNode('disabled_routes')->defaultValue(array())->end()
 				->variableNode('environnements')->defaultValue(array('prod'))->end()

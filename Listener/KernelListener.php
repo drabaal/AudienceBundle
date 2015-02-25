@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Tga\AudienceBundle\Browser\UserAgent;
@@ -70,6 +71,7 @@ class KernelListener
 		$this->sessionData = array();
 
 		$this->config = array(
+			'onlyMasterRequests' => $container->getParameter('tga_audience.only_master_requests'),
 			'sessionDuration' => $container->getParameter('tga_audience.session_duration'),
 			'disabledRoutes' => $container->getParameter('tga_audience.disabled_routes'),
 			'environnements' => $container->getParameter('tga_audience.environnements'),
@@ -82,6 +84,7 @@ class KernelListener
 	public function onKernelRequest(GetResponseEvent $event)
 	{
 		$this->startTime = microtime(true);
+		$event->getRequest()->attributes->set('_request_type', $event->getRequestType());
 	}
 
 	/**
@@ -89,6 +92,14 @@ class KernelListener
 	 */
 	public function onKernelTerminate(PostResponseEvent $event)
 	{
+		$trackOnlyMasterRequest = 
+			$this->config['onlyMasterRequests'] &&
+			($this->request->attributes->get('_request_type') !== 
+				HttpKernelInterface::MASTER_REQUEST);
+		if ($trackOnlyMasterRequest) {
+			return;
+		}
+
 		if(! in_array($this->kernel->getEnvironment(), $this->config['environnements']))
 			return;
 

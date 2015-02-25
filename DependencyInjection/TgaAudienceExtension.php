@@ -34,8 +34,9 @@ class TgaAudienceExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-	    $container->setParameter('tga_audience.session_duration', $config['session_duration']);
-	    $container->setParameter('tga_audience.disabled_routes', $config['disabled_routes']);
-	    $container->setParameter('tga_audience.environnements', $config['environnements']);
+        $container->setParameter('tga_audience.only_master_requests', $config['only_master_requests']);
+        $container->setParameter('tga_audience.session_duration', $config['session_duration']);
+        $container->setParameter('tga_audience.disabled_routes', $config['disabled_routes']);
+        $container->setParameter('tga_audience.environnements', $config['environnements']);
     }
 }

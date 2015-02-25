@@ -101,6 +101,7 @@ The default configuration is:
 
 ``` yaml
 tga_audience:
+    only_master_requests: false # Track only master requests
     session_duration: 300       # Duration meanwhile a visitor is unique
     disabled_routes: []         # List of disabled routes to not track with the bundle
     environnements: ['prod']    # List of environnements where the bundle will track requests
